@@ -8,10 +8,17 @@
 import SwiftUI
 
 struct ContentView: View {
-    @State var participants: [String] = ["juli","lola","fabi"]
-    @State var newParticipantName: String = ""
+    @State private var participants: [String] = []
+    @State private var newParticipantName: String = ""
     var body: some View {
         VStack {
+            HStack{
+                TextField("New Participant", text: $newParticipantName)
+                Button("Add") {
+                    participants.append(newParticipantName)
+                    newParticipantName = ""
+                }.disabled(newParticipantName.isEmpty)
+            }
             List{
                 Text("Participants:")
                 ForEach(participants, id: \.self){ name in
