@@ -13,28 +13,39 @@ struct Person: Identifiable{
     var constraints: [UUID] = []
 }
 
+struct PersonDetailView: View {
+    @Binding var person: Person
+    var body: some View {
+        Text("Details for \(person.name)")
+    }
+}
+
 struct ContentView: View {
     @State private var participants: [Person] = []
     @State private var newParticipantName: String = ""
     var body: some View {
-        VStack {
-            HStack{
-                TextField("New Participant", text: $newParticipantName)
-                Button("Add") {
-                    guard !newParticipantName.isEmpty else { return }
-                    let newParticipant = Person(
-                        name: newParticipantName.capitalized
-                    )
-                    participants.append(newParticipant)
-                    newParticipantName = ""
-                }.disabled(newParticipantName.isEmpty)
-            }
-            List{
-                Section(header: Text("Participants:")){
-                    ForEach(participants){ person in
-                        Text(person.name)
+        NavigationStack{
+            VStack {
+                HStack{
+                    TextField("New Participant", text: $newParticipantName)
+                    Button("Add") {
+                        guard !newParticipantName.isEmpty else { return }
+                        let newParticipant = Person(
+                            name: newParticipantName.capitalized
+                        )
+                        participants.append(newParticipant)
+                        newParticipantName = ""
+                    }.disabled(newParticipantName.isEmpty)
+                }
+                List{
+                    Section(header: Text("Participants:")){
+                        ForEach($participants){ person in
+                            NavigationLink(destination: PersonDetailView(person: person)) {
+                                Text(person.wrappedValue.name)
+                            }
+                        }
+                        .onDelete(perform: removeParticipant)
                     }
-                    .onDelete(perform: removeParticipant)
                 }
             }
 
