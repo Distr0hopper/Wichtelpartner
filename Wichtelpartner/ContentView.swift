@@ -7,27 +7,42 @@
 
 import SwiftUI
 
+struct Person: Identifiable{
+    let id = UUID()
+    var name: String
+    var constraints: [UUID] = []
+}
+
 struct ContentView: View {
-    @State private var participants: [String] = []
+    @State private var participants: [Person] = []
     @State private var newParticipantName: String = ""
     var body: some View {
         VStack {
             HStack{
                 TextField("New Participant", text: $newParticipantName)
                 Button("Add") {
-                    participants.append(newParticipantName)
+                    guard !newParticipantName.isEmpty else { return }
+                    let newParticipant = Person(
+                        name: newParticipantName.capitalized
+                    )
+                    participants.append(newParticipant)
                     newParticipantName = ""
                 }.disabled(newParticipantName.isEmpty)
             }
             List{
-                Text("Participants:")
-                ForEach(participants, id: \.self){ name in
-                    Text(name)
+                Section(header: Text("Participants:")){
+                    ForEach(participants){ person in
+                        Text(person.name)
+                    }
+                    .onDelete(perform: removeParticipant)
                 }
             }
 
         }
         .padding()
+    }
+    func removeParticipant(at offsets: IndexSet){
+        participants.remove(atOffsets: offsets)
     }
 }
 
