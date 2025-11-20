@@ -17,13 +17,31 @@ struct PersonDetailView: View {
     @Binding var person: Person
     let allPersons: [Person]
     var body: some View {
-        let filteredList = allPersons.filter({person.name != $0.name})
+        let filteredList = allPersons.filter({person.id != $0.id})
         List {
-            Section(header: Text("Constraints for \(person.name)")) {
+            Section(header: Text("Select constraints for \(person.name)")) {
                 ForEach(filteredList){ listPerson in
-                    Text(listPerson.name)
+                    HStack {
+                        Text(listPerson.name)
+                        Spacer()
+                        if person.constraints.contains(listPerson.id) {
+                            Image(systemName: "checkmark")
+                        }
+                    }
+                    //.contentShape(Rectangle())
+                    .onTapGesture {
+                        toggleConstraint(for: listPerson)
+                    }
                 }
             }
+        }
+    }
+    
+    func toggleConstraint(for listPerson: Person) {
+        if let index = person.constraints.firstIndex(of: listPerson.id){
+            person.constraints.remove(at: index) 
+        } else {
+            person.constraints.append(listPerson.id)
         }
     }
 }
