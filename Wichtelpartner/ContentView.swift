@@ -15,8 +15,16 @@ struct Person: Identifiable{
 
 struct PersonDetailView: View {
     @Binding var person: Person
+    let allPersons: [Person]
     var body: some View {
-        Text("Details for \(person.name)")
+        let filteredList = allPersons.filter({person.name != $0.name})
+        List {
+            Section(header: Text("Constraints for \(person.name)")) {
+                ForEach(filteredList){ listPerson in
+                    Text(listPerson.name)
+                }
+            }
+        }
     }
 }
 
@@ -40,7 +48,10 @@ struct ContentView: View {
                 List{
                     Section(header: Text("Participants:")){
                         ForEach($participants){ person in
-                            NavigationLink(destination: PersonDetailView(person: person)) {
+                            NavigationLink(destination: PersonDetailView(
+                                person: person,
+                                allPersons: participants)
+                                ) {
                                 Text(person.wrappedValue.name)
                             }
                         }
