@@ -15,7 +15,7 @@ struct Person: Identifiable{
 
 struct PersonDetailView: View {
     @Binding var person: Person
-    let allPersons: [Person]
+    @Binding var allPersons: [Person]
     var body: some View {
         let filteredList = allPersons.filter({person.id != $0.id})
         List {
@@ -28,7 +28,7 @@ struct PersonDetailView: View {
                             Image(systemName: "checkmark")
                         }
                     }
-                    //.contentShape(Rectangle())
+                    //.contentShape(Rectangle())¥
                     .onTapGesture {
                         toggleConstraint(for: listPerson)
                     }
@@ -38,10 +38,24 @@ struct PersonDetailView: View {
     }
     
     func toggleConstraint(for listPerson: Person) {
-        if let index = person.constraints.firstIndex(of: listPerson.id){
-            person.constraints.remove(at: index) 
+        // 1. Find the index of the other person in the main array
+        guard let otherPersonIndex = allPersons.firstIndex(where: { $0.id == listPerson.id }) else {
+            return
+        }
+        
+        // 2. Toggle constraint for the CURRENT person (being edited)
+        if let index = person.constraints.firstIndex(of: listPerson.id) {
+            person.constraints.remove(at: index)
+            
+            // 3. ALSO remove the constraint from the OTHER person
+            if let otherConstraintIndex = allPersons[otherPersonIndex].constraints.firstIndex(of: person.id) {
+                allPersons[otherPersonIndex].constraints.remove(at: otherConstraintIndex)
+            }
         } else {
             person.constraints.append(listPerson.id)
+            
+            // 4. ALSO add the constraint to the OTHER person
+            allPersons[otherPersonIndex].constraints.append(person.id)
         }
     }
 }
@@ -68,7 +82,7 @@ struct ContentView: View {
                         ForEach($participants){ person in
                             NavigationLink(destination: PersonDetailView(
                                 person: person,
-                                allPersons: participants)
+                                allPersons: $participants)
                                 ) {
                                 Text(person.wrappedValue.name)
                             }
