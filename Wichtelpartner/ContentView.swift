@@ -28,34 +28,35 @@ struct PersonDetailView: View {
                             Image(systemName: "checkmark")
                         }
                     }
-                    //.contentShape(Rectangle())¥
+                    //.contentShape(Rectangle())
                     .onTapGesture {
                         toggleConstraint(for: listPerson)
                     }
                 }
             }
         }
-    }
-    
-    func toggleConstraint(for listPerson: Person) {
-        // 1. Find the index of the other person in the main array
-        guard let otherPersonIndex = allPersons.firstIndex(where: { $0.id == listPerson.id }) else {
-            return
-        }
         
-        // 2. Toggle constraint for the CURRENT person (being edited)
-        if let index = person.constraints.firstIndex(of: listPerson.id) {
-            person.constraints.remove(at: index)
-            
-            // 3. ALSO remove the constraint from the OTHER person
-            if let otherConstraintIndex = allPersons[otherPersonIndex].constraints.firstIndex(of: person.id) {
-                allPersons[otherPersonIndex].constraints.remove(at: otherConstraintIndex)
+    }
+    func toggleConstraint(for constraintPerson: Person) {
+        // Because constraints are two-directional, find the index of the constraintPerson in the list
+        // of allPersons, because otherwise we cannot append or remove(at index!) of the constraint person (immutable)
+        guard let indexOfConstraintPersonInArray = allPersons.firstIndex(where: {$0.id == constraintPerson.id}) else {return}
+        // If the person is already in the constraint, remove it
+        if person.constraints.contains(constraintPerson.id){
+            // Remove that person from the list
+            //person.constraints.removeAll(where: {$0 == constraintPerson.id})
+            // Instead of searching through the whole array, just find the index to remove (firstIndex(of:) - remove(at:) pattern!)
+            if let indexToRemove = person.constraints.firstIndex(of: constraintPerson.id) {
+                person.constraints.remove(at: indexToRemove)
+                allPersons[indexOfConstraintPersonInArray].constraints.remove(at:indexToRemove)
             }
+            // Also remove the constraint from the other person if there is one
+            //allPersons[indexOfConstraintPersonInAllPerson].constraints.removeAll(where: {$0 == person.id})
+            // Again, we can use the index directly in the if-statement
         } else {
-            person.constraints.append(listPerson.id)
-            
-            // 4. ALSO add the constraint to the OTHER person
-            allPersons[otherPersonIndex].constraints.append(person.id)
+            person.constraints.append(constraintPerson.id)
+            // Add the constraint also to the other person
+            allPersons[indexOfConstraintPersonInArray].constraints.append(person.id)
         }
     }
 }
