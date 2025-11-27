@@ -103,11 +103,12 @@ struct ContentView: View {
                     generatePairs()
                 }
             }
-            .alert(isPresented: $showingResultAlert) {
-                Alert(
-                    title: Text("Generated Wichtelpaar"),
-                    message: Text(resultsMessage)
-                )
+            .alert("Finished generating pairs", isPresented: $showingResultAlert) {
+                NavigationLink(destination: WichtelpartnerView()) {
+                    Button("Go to Wichtelpartner View") {}
+                }
+            } message: {
+                Text(resultsMessage)
             }
 
         }
