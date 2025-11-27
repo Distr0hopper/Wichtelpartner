@@ -13,6 +13,12 @@ struct Person: Identifiable{
     var constraints: [UUID] = []
 }
 
+struct WichtelpartnerView: View {
+    var body: some View {
+        Text("Wichtelpartner")
+    }
+}
+
 struct PersonDetailView: View {
     @Binding var person: Person
     @Binding var allPersons: [Person]
@@ -64,6 +70,8 @@ struct PersonDetailView: View {
 struct ContentView: View {
     @State private var participants: [Person] = []
     @State private var newParticipantName: String = ""
+    @State private var showingResultAlert: Bool = false
+    @State private var resultsMessage: String = ""
     var body: some View {
         NavigationStack{
             VStack {
@@ -91,6 +99,15 @@ struct ContentView: View {
                         .onDelete(perform: removeParticipant)
                     }
                 }
+                Button("Generate Wichtelpaar") {
+                    generatePairs()
+                }
+            }
+            .alert(isPresented: $showingResultAlert) {
+                Alert(
+                    title: Text("Generated Wichtelpaar"),
+                    message: Text(resultsMessage)
+                )
             }
 
         }
@@ -98,6 +115,10 @@ struct ContentView: View {
     }
     func removeParticipant(at offsets: IndexSet){
         participants.remove(atOffsets: offsets)
+    }
+    func generatePairs(){
+        resultsMessage = "Not implemented yet"
+        showingResultAlert.toggle()
     }
 }
 
