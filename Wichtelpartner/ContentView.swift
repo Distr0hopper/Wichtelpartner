@@ -14,8 +14,19 @@ struct Person: Identifiable{
 }
 
 struct WichtelpartnerView: View {
+    @Binding var pairedResults: [(Person, Person)]
     var body: some View {
-        Text("Wichtelpartner")
+        List {
+            Section(header: Text("List of Wichtelpartner results")) {
+                ForEach(pairedResults, id: \.0.id) { pair in
+                    HStack {
+                        Text(pair.0.name)
+                        Spacer()
+                        Text(pair.1.name)
+                    }
+                }
+            }
+        }
     }
 }
 
@@ -71,7 +82,9 @@ struct ContentView: View {
     @State private var participants: [Person] = []
     @State private var newParticipantName: String = ""
     @State private var showingResultAlert: Bool = false
+    @State private var hideNavigationLink: Bool = false
     @State private var resultsMessage: String = ""
+    @State private var pairedResults: [(Person,Person)] = []
     var body: some View {
         NavigationStack{
             VStack {
@@ -103,10 +116,11 @@ struct ContentView: View {
                     generatePairs()
                 }
             }
-            .alert("Finished generating pairs", isPresented: $showingResultAlert) {
-                NavigationLink(destination: WichtelpartnerView()) {
+            .alert("", isPresented: $showingResultAlert) {
+                NavigationLink(destination: WichtelpartnerView(pairedResults: $pairedResults)) {
                     Button("Go to Wichtelpartner View") {}
-                }
+                }.disabled(hideNavigationLink)
+                Button("Cancel", role: .cancel) {}
             } message: {
                 Text(resultsMessage)
             }
@@ -118,7 +132,44 @@ struct ContentView: View {
         participants.remove(atOffsets: offsets)
     }
     func generatePairs(){
-        resultsMessage = "Not implemented yet"
+        // Pre checks: If we have not at least 2 persons or an odd number, throw error
+        if participants.count < 2 || participants.count % 2 != 0{
+            resultsMessage = "Not enough participants or odd number of participants"
+            hideNavigationLink = true // if error, dont link to WichtelpartnerView
+            showingResultAlert.toggle()
+            return
+        }
+        // Try the pairing 100 times
+        for _ in 1...100 {
+            var shuffledParticipants = participants.shuffled()
+            var pairsInThisAttempt: [(Person, Person)] = []
+            var success = true
+            
+            while !shuffledParticipants.isEmpty {
+                let person1 = shuffledParticipants.removeFirst()
+                // Find index of a valid partner (not in constraints)
+                if let partnerIndex = shuffledParticipants.firstIndex(where: {!person1.constraints.contains($0.id)}) {
+                //
+                let partner = shuffledParticipants.remove(at: partnerIndex)
+                pairsInThisAttempt.append((person1, partner))
+                print("Paired \(person1.name) with \(partner.name)")
+                } else {
+                    // Could not find a partner for person1, this attempt fails
+                    success = false
+                    break
+                }
+            }
+            if (success){
+                pairedResults = pairsInThisAttempt
+                resultsMessage = "Success! A valid set of pairs was found."
+                hideNavigationLink = false
+                showingResultAlert.toggle()
+                return
+            }
+            
+        }
+        resultsMessage = "Could not find a valid pairing after 100 attempts. Try removing some constraints."
+        hideNavigationLink = true
         showingResultAlert.toggle()
     }
 }
