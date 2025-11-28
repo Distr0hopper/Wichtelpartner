@@ -6,8 +6,13 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		A3E78C6D2ED99DCA007EDE40 /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = A3E78C6C2ED99DCA007EDE40 /* README.md */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXFileReference section */
 		A305D8612ECCA9F400EEB064 /* Wichtelpartner.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Wichtelpartner.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		A3E78C6C2ED99DCA007EDE40 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -32,6 +37,7 @@
 		A305D8582ECCA9F400EEB064 = {
 			isa = PBXGroup;
 			children = (
+				A3E78C6C2ED99DCA007EDE40 /* README.md */,
 				A305D8632ECCA9F400EEB064 /* Wichtelpartner */,
 				A305D8622ECCA9F400EEB064 /* Products */,
 			);
@@ -109,6 +115,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A3E78C6D2ED99DCA007EDE40 /* README.md in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
