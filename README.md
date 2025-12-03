@@ -23,4 +23,5 @@ Eine iOS-App zur Organisation von Wichtelgruppen mit gegenseitigem Beschenken.
 ## Status
 
 🚧 In Entwicklung. 
+
 Diese Projekt dient als erster Einstieg in Swift und SwiftUI. 
